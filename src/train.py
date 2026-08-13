@@ -3,11 +3,16 @@ import tensorflow.keras.losses as ls
 import tensorflow.keras.optimizers as op
 import tensorflow.keras.callbacks as tfc
 import Model
+import json
 
 IMG_SIZE=(224,224)
 BATCH_SIZE=32
-LEARNING_RATE=0.0001
-
+LEARNING_RATE_OUTPUT=0.0001
+LEARNING_RATE_TUNE=0.00001
+START_LAYER=125
+PATIENCE=4
+model=Model.model
+base_model=Model.base_model
 train=image_dataset_from_directory(
     "datasets/fanconic/skin-cancer-malignant-vs-benign/versions/4/train",
     image_size=IMG_SIZE,
@@ -29,14 +34,25 @@ validation=image_dataset_from_directory(
 
 
 )
-test=train=image_dataset_from_directory(
+test=image_dataset_from_directory(
     "datasets/fanconic/skin-cancer-malignant-vs-benign/versions/4/test",
     image_size=IMG_SIZE,
     batch_size=BATCH_SIZE
 
 
 )
-callback=tfc.EarlyStopping(patience=3,restore_best_weights=True)
-Model.model.compile(optimizer=op.Adam(learning_rate=LEARNING_RATE),loss=ls.BinaryCrossentropy(),metrics=["accuracy"])
-Model.model.fit(train,validation_data=validation,epochs=50,callbacks=[callback])
-Model.model.save_weights("weights/model.weights.h5")
+callback=tfc.EarlyStopping(patience=PATIENCE,restore_best_weights=True)
+model.compile(optimizer=op.Adam(learning_rate=LEARNING_RATE_OUTPUT),loss=ls.BinaryCrossentropy(),metrics=["accuracy"])
+history1=model.fit(train,validation_data=validation,epochs=50,callbacks=[callback])
+base_model.trainable = True
+for layer in base_model.layers[:START_LAYER]:
+    layer.trainable=False
+model.compile(optimizer=op.Adam(learning_rate=LEARNING_RATE_TUNE),loss=ls.BinaryCrossentropy(),metrics=["accuracy"])
+history2=model.fit(train,validation_data=validation,epochs=50,callbacks=[callback])
+model.save_weights("weights/model_with_data_augmentation.weights.h5")
+
+with open("notebooks/first_fit","w") as f:
+    json.dump(history1.history,f)
+
+with open("notebooks/second_fit","w") as f:
+    json.dump(history2.history,f)

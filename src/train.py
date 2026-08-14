@@ -57,8 +57,8 @@ model.compile(optimizer=op.Adam(learning_rate=LEARNING_RATE_TUNE),loss=ls.Binary
 history2=model.fit(train,validation_data=validation,epochs=50,callbacks=[callback])
 model.save_weights("weights/model_with_data_augmentation.weights.h5")
 
-with open("notebooks/first_fit","w") as f:
+with open("notebooks/first_fit.json","w") as f:
     json.dump(history1.history,f)
 
-with open("notebooks/second_fit","w") as f:
+with open("notebooks/second_fit.json","w") as f:
     json.dump(history2.history,f)

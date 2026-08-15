@@ -10,7 +10,7 @@ IMG_SIZE=(224,224)
 BATCH_SIZE=32
 LEARNING_RATE_OUTPUT=0.0001
 LEARNING_RATE_TUNE=0.00001
-START_LAYER=125
+START_LAYER=90
 PATIENCE=6
 model=Model.model
 base_model=Model.base_model
@@ -57,8 +57,8 @@ model.compile(optimizer=op.Adam(learning_rate=LEARNING_RATE_TUNE),loss=ls.Binary
 history2=model.fit(train,validation_data=validation,epochs=50,callbacks=[callback])
 model.save_weights("weights/model_with_data_augmentation.weights.h5")
 
-with open("notebooks/first_fit.json","w") as f:
+with open(f"notebooks/first_fit_{str(START_LAYER)}.json","w") as f:
     json.dump(history1.history,f)
 
-with open("notebooks/second_fit.json","w") as f:
+with open(f"notebooks/second_fit_{str(START_LAYER)}.json","w") as f:
     json.dump(history2.history,f)

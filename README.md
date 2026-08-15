@@ -35,17 +35,18 @@ The dataset consists of dermatoscopic images labeled as malignant or benign, spl
 
 ## Results
 
-| Metric | Training | Validation |
-|---|---|---|
-accuracy             | 0.9512 | 0.8786
-precision            | 0.9466 | 0.8966
-recall               | 0.9475 | 0.8089
-auc                  | 0.9900 | 0.9495
-true_positives       | 921    | 182
-true_negatives       | 1086   | 281
-false_positives      | 52     | 21
-false_negatives      | 51     | 43
-f1_score             | 0.9470 | 0.8505
+## Fine-tuning: Layer Unfreezing Ablation
+
+Comparison of validation performance when unfreezing MobileNetV2 from different starting layers (out of ~154 total layers), with BatchNormalization layers kept frozen throughout.
+
+| Layers Unfrozen (from) | Val Accuracy | Val Precision | Val Recall | Val F1 | Val AUC | Val FN | Val FP |
+|---|---|---|---|---|---|---|---|
+| 125 | 87.86% | 89.66% | 80.89% | 85.05% | 94.95% | 43 | 21 |
+| 100 | 89.18% | 85.90% | 89.33% | 87.58% | 95.47% | 24 | 33 |
+| 90  | **90.70%** | 87.29% | **91.56%** | **89.37%** | **95.85%** | **19** | 30 |
+| 75  | 88.24% | 82.73% | 91.56% | 86.92% | 95.41% | **19** | 43 |
+
+**Best configuration: unfreezing from layer 90 onward**, offering the best balance of accuracy, F1, and AUC while matching the top recall (91.56%) achieved at layer 75 — but with significantly fewer false positives (30 vs. 43).
 
 
 ## Project Structure
